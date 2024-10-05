@@ -38,6 +38,7 @@ class ScoutDatabaseExtractor:
                     for player_entry in player_entries:
                         # Extract the player's name, position, and link
                         name_tag = player_entry.find('a')
+                        #TODO : trouver les position
                         position_info = "___" #player_entry.text.split('·')[2].strip() if '·' in player_entry.text else None
                         
                         if name_tag and position_info:
@@ -53,6 +54,7 @@ class ScoutDatabaseExtractor:
                             }
                             
                             # Append the player data to the players list
+                            #TODO : verifier si le joueur a un report scout avant de le rajouter à la db
                             self.players.append(player_data)
                 else:
                     print(f"No player links found on page {url}")
@@ -80,3 +82,5 @@ class ScoutDatabaseExtractor:
 extractor = ScoutDatabaseExtractor()
 extractor.extract_all_players()  # Extract players from all URLs
 extractor.save_to_json()  # Save the extracted players to a JSON file
+
+# TODO : il faut passer le les erreurs 429
