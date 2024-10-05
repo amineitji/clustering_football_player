@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import string
 import re
 import json
+import time
 
 class ScoutDatabaseExtractor:
     def __init__(self):
@@ -45,6 +46,16 @@ class ScoutDatabaseExtractor:
                             player_name = name_tag.text.strip()
                             player_link = self.base_url + name_tag.get('href').strip() + "/"
                             player_position = position_info.split('·')[0]  # Example: 'FW'
+
+                            # Send a GET request to the URL
+                            response_2 = requests.get(player_link)
+                            # Check if the request was successful
+                            if response_2.status_code == 200:
+                                # Parse the HTML content with BeautifulSoup
+                                soup_2 = BeautifulSoup(response_2.text, 'html.parser')
+                                table_test = soup_2.find('table')
+                                if not table_test:
+                                    return
                             
                             # Create a dictionary with player info
                             player_data = {
@@ -68,6 +79,7 @@ class ScoutDatabaseExtractor:
         for url in urls:
             self.page_extractor(url)
             print(f"Extracted players from {url}")
+            #time.sleep(2) 
 
     def save_to_json(self, filename="data/db_players.json"):
         try:
