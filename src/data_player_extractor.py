@@ -4,7 +4,7 @@ import requests
 import csv
 from bs4 import BeautifulSoup
 
-class DataExtractor:
+class DataPlayerExtractor:
     def __init__(self, url):
         self.url = url
         self.soup = None
