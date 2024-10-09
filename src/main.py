@@ -7,30 +7,32 @@ def main():
     # Initialiser les classes
     data_extractor = DataExtractor(file_path)
     
-    # Sélectionner un joueur par son nom
-    player_name = "Jack Grealish"
-    selected_player = data_extractor.get_player_data(player_name)
+    # Exemple de liste de joueurs à afficher
+    player_names = [
+        "Willian Pacho", "Achraf Hakimi", "João Neves", "Warren Zaïre-Emery", 
+        "Bradley Barcola", "Marquinhos", "Lucas Beraldo", 
+        "Ousmane Dembélé", "Lee Kang-in", "Vitinha", "Marco Asensio", 
+        "Fabián Ruiz Peña", "Nuno Mendes", "Randal Kolo Muani", 
+        "Désiré Doué", "Milan Škriniar", "Ibrahim Mbaye", "Yoram Zague", 
+        "Gonçalo Ramos", "Senny Mayulu", "Naoufel El Hannach", "Carlos Soler", 
+    ]
     
-    # Obtenir les positions et les joueurs correspondants
-    position_players = data_extractor.get_position_data(player_name)
+    # Obtenir les données pour la liste de joueurs sans filtrer par position
+    player_data = data_extractor.get_players_from_list(player_names)
     
     # Caractéristiques offensives et défensives
     offensive_features = ['Passes progressives']
     defensive_features = ['Possessions progressives']
     
-    # Filtrer les caractéristiques et standardiser les données
-    filtered_features = data_extractor.filter_features(position_players, offensive_features, defensive_features)
-    scaled_features = data_extractor.scale_features(filtered_features)
+    # Pas besoin de PCA : nous allons juste utiliser ces caractéristiques directement
+    filtered_features = player_data[offensive_features + defensive_features].dropna()
     
-    # Visualisation des données
-    visualizer = DataVisualizer(scaled_features, position_players)
+    # Initialiser le visualiseur
+    visualizer = DataVisualizer(filtered_features, player_data, color1="#000000", color2="#3b3700")
     
-    # Tracer les joueurs pour une position spécifique
-    visualizer.plot_player(player_name, selected_player['Position'].values[0].split(','))
-    
-    # Comparaison entre plusieurs joueurs
-    player_names = ["Jack Grealish", "Phil Foden", "Mason Mount"]
-    visualizer.plot_comparison(player_names)
+    # Afficher les joueurs de la liste
+    visualizer.plot_players_from_list(player_names)
+
 
 if __name__ == "__main__":
     main()
