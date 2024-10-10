@@ -34,7 +34,7 @@ class DataVisualizer:
             spine.set_edgecolor('white')  # Couleur blanche
             spine.set_linewidth(2.5)  # Épaisseur du contour
 
-    def plot_players_from_list(self, player_names, threshold_distance=1,):
+    def plot_players_from_list(self, player_names, threshold_distance=1):
         # Créer une figure avec des dimensions adaptées pour les appareils mobiles
         fig = plt.figure(figsize=(16, 9))  # Largeur 16, hauteur 9 pour un ajustement mobile
 
@@ -55,8 +55,8 @@ class DataVisualizer:
         scatter = ax.scatter(x_values, y_values, color='red', edgecolor='black', s=200, zorder=1)
 
         # Ajuster les limites de l'axe
-        ax.set_xlim(np.min(x_values) - 1, np.max(x_values) + 1)
-        ax.set_ylim(np.min(y_values) - 1, np.max(y_values) + 1)
+        ax.set_xlim(np.floor(np.min(x_values)) - 1, np.ceil(np.max(x_values)) + 1)
+        ax.set_ylim(np.floor(np.min(y_values)) - 1, np.ceil(np.max(y_values)) + 1)
 
         # Afficher les noms des joueurs
         displayed_names = []
@@ -72,20 +72,24 @@ class DataVisualizer:
         # Ajouter le titre en blanc et en gras
         ax.set_title('Projection des Passes et des Possessions progressives (FBREF)', fontsize=25, color='white', fontweight='bold')
 
-        # Ajouter les labels des axes en blanc et en gras
-        ax.set_xlabel('PROGRESSION PAR LA PASSE', fontsize=20, color='white', fontweight='bold')
-        ax.set_ylabel('PROGRESSION PAR LA CONDUITE DE BALLE', fontsize=20, color='white', fontweight='bold')
+        # Ajouter les labels des axes en blanc et en gras avec détails supplémentaires
+        ax.set_xlabel('Passes progressives (par 90")', fontsize=16, color='white', fontweight='bold')
+        ax.set_ylabel('Possessions progressives (par 90")', fontsize=16, color='white', fontweight='bold')
 
+        # Ajouter l'étiquette Twitter
         ax.text(0.5, 0.75, f"@TarbouchData", fontsize=14, color='white', fontweight='bold', ha='left', transform=ax.transAxes, alpha=0.8)
 
         # Appliquer la personnalisation des axes (contours blancs et épais)
         self.customize_axes(ax)
 
-        # Retirer les ticks des axes pour rendre l'affichage plus propre
-        ax.set_xticks([])
-        ax.set_yticks([])
+        # Ajouter les ticks des axes (graduations) en blanc
+        ax.tick_params(axis='x', colors='white', labelsize=14)  # Ticks en blanc et taille des labels réduite
+        ax.tick_params(axis='y', colors='white', labelsize=14)
 
-        plt.savefig("viz_data/projection_passes_possessions.jpeg", format='jpeg', dpi=300)  # Sauvegarde en format JPEG avec résolution de 300 DPI
+        # Appliquer les ticks pour montrer les valeurs de progression moyenne par match (seulement des entiers)
+        ax.set_xticks(np.arange(np.floor(np.min(x_values)), np.ceil(np.max(x_values)) + 1, 1))
+        ax.set_yticks(np.arange(np.floor(np.min(y_values)), np.ceil(np.max(y_values)) + 1, 1))
 
-        # Afficher le graphique à l'écran
+        # Sauvegarder le fichier et afficher le graphique
+        plt.savefig("viz_data/projection_passes_possessions.jpeg", format='jpeg', dpi=300)
         plt.show()
