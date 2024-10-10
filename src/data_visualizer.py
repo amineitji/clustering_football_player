@@ -34,7 +34,8 @@ class DataVisualizer:
             spine.set_edgecolor('white')  # Couleur blanche
             spine.set_linewidth(2.5)  # Épaisseur du contour
 
-    def plot_players_from_list(self, player_names, threshold_distance=1):
+    def plot_players_by_team(self, team_name, threshold_distance=1):
+        """Affiche tous les joueurs d'une équipe donnée dans un graphique."""
         # Créer une figure avec des dimensions adaptées pour les appareils mobiles
         fig = plt.figure(figsize=(16, 9))  # Largeur 16, hauteur 9 pour un ajustement mobile
 
@@ -48,17 +49,21 @@ class DataVisualizer:
         x_values = self.features['Passes progressives']
         y_values = self.features['Possessions progressives']
 
-        # Filtrer les données pour ne garder que les joueurs dans la liste donnée
-        filtered_players = self.players_data[self.players_data['player_name'].isin(player_names)]
+        # Filtrer les données pour ne garder que les joueurs de l'équipe donnée
+        filtered_players = self.players_data[self.players_data['Team Name'] == team_name]
 
-        # Tracer les joueurs spécifiés dans la liste filtrée
+        if filtered_players.empty:
+            print(f"Aucun joueur trouvé pour l'équipe {team_name}.")
+            return
+
+        # Tracer les joueurs de l'équipe filtrée
         scatter = ax.scatter(x_values, y_values, color='red', edgecolor='black', s=200, zorder=1)
 
         # Ajuster les limites de l'axe
         ax.set_xlim(np.floor(np.min(x_values)) - 1, np.ceil(np.max(x_values)) + 1)
         ax.set_ylim(np.floor(np.min(y_values)) - 1, np.ceil(np.max(y_values)) + 1)
 
-        # Afficher les noms des joueurs
+        # Afficher les noms des joueurs de l'équipe
         displayed_names = []
         for i, row in filtered_players.iterrows():
             name = row['player_name']
@@ -70,7 +75,7 @@ class DataVisualizer:
                 displayed_names.append((x, y))
 
         # Ajouter le titre en blanc et en gras
-        ax.set_title('Projection des Passes et des Possessions progressives (FBREF)', fontsize=25, color='white', fontweight='bold')
+        ax.set_title(f'Projection des Passes et des Possessions progressives ({team_name})', fontsize=25, color='white', fontweight='bold')
 
         # Ajouter les labels des axes en blanc et en gras avec détails supplémentaires
         ax.set_xlabel('Passes progressives (par 90")', fontsize=16, color='white', fontweight='bold')
@@ -91,5 +96,5 @@ class DataVisualizer:
         ax.set_yticks(np.arange(np.floor(np.min(y_values)), np.ceil(np.max(y_values)) + 1, 1))
 
         # Sauvegarder le fichier et afficher le graphique
-        plt.savefig("viz_data/projection_passes_possessions.jpeg", format='jpeg', dpi=300)
+        plt.savefig(f"viz_data/projection_passes_possessions_{team_name}.jpeg", format='jpeg', dpi=300)
         plt.show()

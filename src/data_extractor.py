@@ -19,9 +19,8 @@ class DataExtractor:
         else:
             return self.data[self.data['Position'] == positions[0]]
 
-    def get_players_from_list(self, player_names):
-        """Obtenir les données pour une liste de joueurs, sans tenir compte des postes."""
-        return self.data[self.data['player_name'].isin(player_names)]
+    def get_players_by_team(self, team_name):
+        return self.data[self.data['Team Name'] == team_name]
 
     def filter_features(self, player_data, offensive_features, defensive_features):
         """Filtrer les caractéristiques offensives et défensives spécifiées."""
