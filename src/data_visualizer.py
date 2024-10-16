@@ -158,7 +158,7 @@ class DataVisualizer:
 
         # Créer une figure avec une répartition 80%-20% pour les colonnes
         fig = plt.figure(figsize=(16, 9))
-        gs = GridSpec(1, 2, width_ratios=[4, 1], wspace=0.3)  # 80% pour le graphique, 20% pour le tableau
+        gs = GridSpec(1, 2, width_ratios=[3, 1], wspace=0.3)  # 80% pour le graphique, 20% pour le tableau
 
         # Créer le fond en dégradé pour l'ensemble de la figure
         self.create_gradient_background(fig)
@@ -194,7 +194,7 @@ class DataVisualizer:
         positions_str = ', '.join(positions) if len(positions) > 1 else positions[0]
         
         # Ajouter le titre en blanc et en gras avec les positions correctement affichées
-        ax1.set_title(f'Clustering des joueurs pour la position : {positions_str}', fontsize=25, color='white', fontweight='bold')
+        ax1.set_title(f'Clustering des joueurs à la position : {positions_str}', fontsize=25, color='white', fontweight='bold')
 
 
         # Ajouter les labels des axes en blanc et en gras avec détails supplémentaires
@@ -233,9 +233,9 @@ class DataVisualizer:
 
         # Créer un tableau dans la colonne de droite avec des cases transparentes sauf l'en-tête
         table_data = closest_players.values
-        table = ax2.table(cellText=table_data, colLabels=['Nom', 'Distance'], cellLoc='center', loc='center')
+        table = ax2.table(cellText=table_data, colLabels=['Nom', f'Distance - {player_name}'], cellLoc='center', loc='center')
         table.auto_set_font_size(False)
-        table.set_fontsize(14)
+        table.set_fontsize(11)
         table.scale(2, 4.1)  # Augmenter la taille du tableau (hauteur et largeur)
 
         # Appliquer des bordures blanches et épaisses, et un texte gras pour le tableau
@@ -251,7 +251,7 @@ class DataVisualizer:
 
 
         # Sauvegarder le fichier et afficher le graphique
-        plt.savefig(f"{output_dir}/clustering_{player_name}_styled.png", format='png', dpi=300, bbox_inches='tight')
+        plt.savefig(f"{output_dir}/clustering_{player_name}_styled.png", format='png')
         plt.show()
 
     
@@ -313,7 +313,7 @@ class DataVisualizer:
 
         # Créer une figure avec une répartition 60%-40% pour les colonnes
         fig = plt.figure(figsize=(16, 9))
-        gs = GridSpec(1, 2, width_ratios=[3, 2], wspace=0.3)  # 60% pour le graphique, 40% pour le tableau
+        gs = GridSpec(1, 2, width_ratios=[3, 1], wspace=0.3)  # 60% pour le graphique, 40% pour le tableau
 
         # Créer le fond en dégradé pour l'ensemble de la figure
         self.create_gradient_background(fig)
@@ -345,7 +345,7 @@ class DataVisualizer:
                 player_pca[0, 0], 
                 player_pca[0, 1], 
                 color='red', marker='x', s=300, 
-                zorder=3, linewidth=3, edgecolors='black'
+                zorder=4, linewidth=4, edgecolors='black'
             )
             comp_scatters.append(comp_scatter)
     
@@ -387,16 +387,16 @@ class DataVisualizer:
 
         # Créer un tableau avec deux colonnes : Joueur, Distance avec {Joueur de référence}
         closest_players = pd.DataFrame({
-            'Joueur': other_players,
-            f'Distance avec {reference_player}': distances.round(2)
+            'Nom': other_players,
+            f'Distance - {reference_player}': distances.round(2)
         })
 
         # Créer un tableau dans la colonne de droite
         table_data = closest_players.values
-        table = ax2.table(cellText=table_data, colLabels=['Joueur', f'Distance avec {reference_player}'], cellLoc='center', loc='center')
+        table = ax2.table(cellText=table_data, colLabels=['Nom', f'Distance - {reference_player}'], cellLoc='center', loc='center')
         table.auto_set_font_size(False)
-        table.set_fontsize(14)
-        table.scale(1.5, 4)  # Augmenter la taille du tableau (hauteur et largeur)
+        table.set_fontsize(11)
+        table.scale(2, 4.1)  # Augmenter la taille du tableau (hauteur et largeur)
 
         # Appliquer des bordures blanches et épaisses, et un texte gras pour le tableau
         for key, cell in table.get_celld().items():
@@ -410,5 +410,5 @@ class DataVisualizer:
                 cell.set_facecolor('none')  # Cases transparentes pour les autres lignes
 
         # Sauvegarder le fichier et afficher le graphique
-        plt.savefig(f"{output_dir}/clustering_{reference_player}_vs_others_styled.png", format='png', dpi=300, bbox_inches='tight')
+        plt.savefig(f"{output_dir}/clustering_{reference_player}_vs_others_styled.png", format='png')
         plt.show()

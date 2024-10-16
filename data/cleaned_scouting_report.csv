@@ -1,4 +1,5 @@
 player_name,Position,Team Name,Buts (sans les pénaltys),npxG: xG sans les pénaltys,Total des tirs,Passes décisives,xAG: Prévu(s) Buts assistés,npxG + xAG,Actions menant à un tir,Passes tentées,% de passes réussies,Passes progressives,Possessions progressives,Dribbles réussis,Touches (SurfRépOff),Passes progressives reçues,Tacles,Interceptions,Balles contrées,Dégagements,Duel aérien gagnés
+Azzedine Ounahi,MF,Marseille,0.06,0.07,1.26,0.06,0.13,0.20,2.90,60.08,88.8%,7.62,1.95,0.69,51.84,4.66,1.70,0.82,0.82,0.57,0.50
 Zlatan Ibrahimović,FW,None,0.62,0.58,4.52,0.26,0.20,0.78,3.84,37.0,69.4%,4.51,1.51,0.26,7.49,7.71,0.27,0.33,0.27,1.24,1.57
 Olivier Giroud,FW,None,0.43,0.39,2.90,0.14,0.11,0.50,2.62,22.83,66.9%,1.09,0.38,0.38,5.85,4.85,0.71,0.14,0.62,0.19,4.38
 Marco Verratti,MF,None,0.00,0.00,0.14,0.10,0.17,0.17,4.02,100.11,90.7%,12.50,2.49,1.63,0.62,1.82,3.45,0.86,1.25,0.38,0.19
