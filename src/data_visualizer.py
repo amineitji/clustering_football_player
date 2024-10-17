@@ -251,6 +251,8 @@ class DataVisualizer:
 
 
         # Sauvegarder le fichier et afficher le graphique
+        plt.subplots_adjust(left=0.05)
+
         plt.savefig(f"{output_dir}/clustering_{player_name}_styled.png", format='png')
         plt.show()
 
@@ -410,5 +412,6 @@ class DataVisualizer:
                 cell.set_facecolor('none')  # Cases transparentes pour les autres lignes
 
         # Sauvegarder le fichier et afficher le graphique
+        plt.subplots_adjust(left=0.05)
         plt.savefig(f"{output_dir}/clustering_{reference_player}_vs_others_styled.png", format='png')
         plt.show()
