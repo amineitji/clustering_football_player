@@ -415,3 +415,99 @@ class DataVisualizer:
         plt.subplots_adjust(left=0.05)
         plt.savefig(f"{output_dir}/clustering_{reference_player}_vs_others_styled.png", format='png')
         plt.show()
+
+    def clustering_players_pca_comparison(self, player_names, data, offensive_features, defensive_features, threshold_distance=1):
+        """Effectuer un PCA sur une liste de joueurs sélectionnés et les afficher sur un graphique."""
+        output_dir = 'viz_data/clustering'
+        os.makedirs(output_dir, exist_ok=True)
+    
+        # Sélectionner les joueurs par leurs noms qui sont présents dans les données
+        valid_players = data['player_name'].isin(player_names)
+        selected_players = data[valid_players]
+    
+        # Vérifier s'il y a des joueurs valides
+        if selected_players.empty:
+            print(f"Aucun des joueurs sélectionnés n'a été trouvé dans les données.")
+            return
+    
+        # Récupérer la liste des joueurs valides (ceux qui existent dans le DataFrame)
+        valid_player_names = selected_players['player_name'].tolist()
+    
+        # Afficher un message pour les joueurs qui ne sont pas trouvés dans les données
+        missing_players = [name for name in player_names if name not in valid_player_names]
+        if missing_players:
+            print(f"Les joueurs suivants n'ont pas été trouvés et seront ignorés : {', '.join(missing_players)}")
+    
+        # Filtrer les caractéristiques et standardiser
+        selected_players = selected_players.dropna(subset=offensive_features + defensive_features)
+        scaler_offensive = StandardScaler()
+        scaler_defensive = StandardScaler()
+    
+        offensive_scaled = scaler_offensive.fit_transform(selected_players[offensive_features])
+        defensive_scaled = scaler_defensive.fit_transform(selected_players[defensive_features])
+    
+        # PCA pour les variables offensives et défensives
+        pca_offensive = PCA(n_components=1)
+        offensive_component = pca_offensive.fit_transform(offensive_scaled)
+    
+        pca_defensive = PCA(n_components=1)
+        defensive_component = pca_defensive.fit_transform(defensive_scaled)
+    
+        # Ajouter les composantes PCA au DataFrame
+        selected_players['PCA_Component_1'] = offensive_component.flatten()
+        selected_players['PCA_Component_2'] = defensive_component.flatten()
+    
+        # Le premier joueur est la référence (s'il est parmi les joueurs valides)
+        reference_player = valid_player_names[0]
+        reference_player_pca = selected_players[selected_players['player_name'] == reference_player][['PCA_Component_1', 'PCA_Component_2']].values
+    
+        # Créer la figure
+        fig = plt.figure(figsize=(16, 9))  # Taille pour appareils mobiles
+        self.create_gradient_background(fig)  # Fond en dégradé
+    
+        # Ajouter un axe pour le graphique principal, avec un fond transparent
+        ax = fig.add_subplot(111, facecolor='none')  # Fond transparent
+    
+        # Afficher les joueurs avec des points (pas de croix)
+        scatter = ax.scatter(
+            selected_players['PCA_Component_1'], 
+            selected_players['PCA_Component_2'], 
+            color='red', edgecolor='black', s=200, zorder=1
+        )
+    
+        # Ajuster les limites des axes
+        ax.set_xlim(np.floor(np.min(selected_players['PCA_Component_1'])) - 1, np.ceil(np.max(selected_players['PCA_Component_1'])) + 1)
+        ax.set_ylim(np.floor(np.min(selected_players['PCA_Component_2'])) - 1, np.ceil(np.max(selected_players['PCA_Component_2'])) + 1)
+    
+        # Ajouter les noms des joueurs
+        displayed_names = []
+        for i, row in selected_players.iterrows():
+            name = row['player_name']
+            x, y = row['PCA_Component_1'], row['PCA_Component_2']
+    
+            # Éviter la superposition des noms en vérifiant la distance entre les points
+            if not any(np.linalg.norm([x - dx, y - dy]) < threshold_distance/3 for dx, dy in displayed_names):
+                ax.text(x + 0.2, y + 0.1, name, fontsize=12, ha='right', va='bottom', fontweight='bold', color='white', zorder=3)
+                displayed_names.append((x, y))
+    
+        # Ajouter le titre en blanc et en gras
+        ax.set_title(f'PCA des joueurs sélectionnés', fontsize=25, color='white', fontweight='bold')
+    
+        # Ajouter les labels des axes en blanc et en gras
+        ax.set_xlabel('Contribution Offensive (PCA Composante 1)', fontsize=16, color='white', fontweight='bold')
+        ax.set_ylabel('Contribution Défensive (PCA Composante 2)', fontsize=16, color='white', fontweight='bold')
+    
+        # Ajouter l'étiquette Twitter
+        ax.text(0.5, 0.75, f"@TarbouchData", fontsize=14, color='white', fontweight='bold', ha='left', transform=ax.transAxes, alpha=0.8)
+    
+        # Appliquer la personnalisation des axes (contours blancs et épais)
+        self.customize_axes(ax)
+    
+        # Ajouter les ticks des axes en blanc
+        ax.tick_params(axis='x', colors='white', labelsize=14)
+        ax.tick_params(axis='y', colors='white', labelsize=14)
+    
+        # Sauvegarder le fichier et afficher le graphique
+        plt.savefig(f"{output_dir}/pca_comparison_{reference_player}_styled.png", format='png', dpi=300)
+        plt.show()
+    
