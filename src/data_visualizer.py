@@ -508,6 +508,288 @@ class DataVisualizer:
         ax.tick_params(axis='y', colors='white', labelsize=14)
     
         # Sauvegarder le fichier et afficher le graphique
-        plt.savefig(f"{output_dir}/pca_comparison_{reference_player}_styled.png", format='png', dpi=300)
+        plt.savefig(f"{output_dir}/pca_comparison_selected_styled.png", format='png', dpi=300)
         plt.show()
     
+    def compare_teams(self, team1_name, team2_name, threshold_distance=1):
+            """Compare deux équipes en affichant les joueurs sur un graphique basé sur création d'occasions (tentatives) et finition (réussites)."""
+
+            # Créer une figure avec des dimensions adaptées pour les appareils mobiles
+            fig = plt.figure(figsize=(16, 9))  # Largeur 16, hauteur 9 pour un ajustement mobile
+
+            # Créer le fond en dégradé pour l'ensemble de la figure
+            self.create_gradient_background(fig)
+
+            # Ajouter un axe pour le graphique principal, avec un fond transparent
+            ax = fig.add_subplot(111, facecolor='none')  # Fond transparent
+
+            # Extraire les colonnes pour la création d'occasions (x) et la finition (y)
+            x_values = self.features['npxG: xG sans les pénaltys']  # Exemple de tentatives: npxG (expected goals sans pénaltys)
+            y_values = self.features['Buts (sans les pénaltys)']  # Exemple de réussite: Buts sans pénaltys
+
+            # Filtrer les données pour chaque équipe
+            team1_players = self.players_data[self.players_data['Team Name'] == team1_name]
+            team2_players = self.players_data[self.players_data['Team Name'] == team2_name]
+
+            if team1_players.empty:
+                print(f"Aucun joueur trouvé pour l'équipe {team1_name}.")
+                return
+
+            if team2_players.empty:
+                print(f"Aucun joueur trouvé pour l'équipe {team2_name}.")
+                return
+
+            # Tracer les joueurs de l'équipe 1 avec des points rouges
+            team1_scatter = ax.scatter(team1_players['npxG: xG sans les pénaltys'], team1_players['Buts (sans les pénaltys)'],
+                                       color='red', edgecolor='black', s=200, zorder=1, label=team1_name)
+
+            # Tracer les joueurs de l'équipe 2 avec des points bleus
+            team2_scatter = ax.scatter(team2_players['npxG: xG sans les pénaltys'], team2_players['Buts (sans les pénaltys)'],
+                                       color='blue', edgecolor='black', s=200, zorder=1, label=team2_name)
+
+            # Ajuster les limites de l'axe en fonction des données
+            ax.set_xlim(np.floor(np.min(x_values)) - 1, np.ceil(np.max(x_values)) + 1)
+            ax.set_ylim(np.floor(np.min(y_values)) - 1, np.ceil(np.max(y_values)) + 1)
+
+            # Afficher les noms des joueurs des deux équipes
+            displayed_names = []
+
+            # Affichage des noms pour l'équipe 1
+            for i, row in team1_players.iterrows():
+                name = row['player_name']
+                x, y = row['npxG: xG sans les pénaltys'], row['Buts (sans les pénaltys)']
+
+                if not any(np.linalg.norm([x - dx, y - dy]) < (threshold_distance / 2) for dx, dy in displayed_names):
+                    ax.text(x + 0.2, y + 0.1, name, fontsize=12, ha='right', va='bottom', fontweight='bold', color='white', zorder=3)
+                    displayed_names.append((x, y))
+
+            # Affichage des noms pour l'équipe 2
+            for i, row in team2_players.iterrows():
+                name = row['player_name']
+                x, y = row['npxG: xG sans les pénaltys'], row['Buts (sans les pénaltys)']
+
+                if not any(np.linalg.norm([x - dx, y - dy]) < (threshold_distance / 2) for dx, dy in displayed_names):
+                    ax.text(x + 0.2, y + 0.1, name, fontsize=12, ha='right', va='bottom', fontweight='bold', color='white', zorder=3)
+                    displayed_names.append((x, y))
+
+            # Ajouter le titre en blanc et en gras
+            ax.set_title(f'Comparaison - ({team1_name} vs {team2_name})', fontsize=25, color='white', fontweight='bold')
+
+            # Ajouter les labels des axes en fonction des nouvelles variables
+            ax.set_xlabel('Création d\'occasions (npxG - expected goals sans pénaltys)', fontsize=16, color='white', fontweight='bold')
+            ax.set_ylabel('Finition des occasions (Buts sans pénaltys)', fontsize=16, color='white', fontweight='bold')
+
+            # Ajouter l'étiquette Twitter
+            ax.text(0.5, 0.75, f"@TarbouchData", fontsize=14, color='white', fontweight='bold', ha='left', transform=ax.transAxes, alpha=0.8)
+
+            # Appliquer la personnalisation des axes (contours blancs et épais)
+            self.customize_axes(ax)
+
+            # Ajouter les ticks des axes (graduations) en blanc
+            ax.tick_params(axis='x', colors='white', labelsize=14)
+            ax.tick_params(axis='y', colors='white', labelsize=14)
+
+            # Ajouter les ticks pour montrer les valeurs de progression moyenne par match (seulement des entiers)
+            ax.set_xticks(np.arange(np.floor(np.min(x_values)), np.ceil(np.max(x_values)) + 1, 1))
+            ax.set_yticks(np.arange(np.floor(np.min(y_values)), np.ceil(np.max(y_values)) + 1, 1))
+
+            # Ajouter la légende pour indiquer les équipes
+            ax.legend(loc='upper left', fontsize=14, facecolor='white', framealpha=0.5)
+
+            # Sauvegarder le fichier et afficher le graphique
+            plt.savefig(f"viz_data/comparaison_tentatives_reussites_{team1_name}_vs_{team2_name}.jpeg", format='jpeg', dpi=300)
+            plt.show()
+
+    def compare_teams(self, team1_name, team2_name, threshold_distance=1):
+        """Compare deux équipes en affichant les joueurs sur un graphique basé sur création d'occasions (tentatives) et finition (réussites)."""
+        
+        # Créer une figure avec des dimensions adaptées pour les appareils mobiles
+        fig = plt.figure(figsize=(16, 9))  # Largeur 16, hauteur 9 pour un ajustement mobile
+        
+        # Créer le fond en dégradé pour l'ensemble de la figure
+        self.create_gradient_background(fig)
+        
+        # Ajouter un axe pour le graphique principal, avec un fond transparent
+        ax = fig.add_subplot(111, facecolor='none')  # Fond transparent
+        
+        # Filtrer les données pour chaque équipe
+        team1_players = self.players_data[self.players_data['Team Name'] == team1_name]
+        team2_players = self.players_data[self.players_data['Team Name'] == team2_name]
+    
+        if team1_players.empty:
+            print(f"Aucun joueur trouvé pour l'équipe {team1_name}.")
+            return
+    
+        if team2_players.empty:
+            print(f"Aucun joueur trouvé pour l'équipe {team2_name}.")
+            return
+        
+        # Combiner les données des deux équipes pour calculer les valeurs min/max
+        combined_data = pd.concat([team1_players, team2_players])
+    
+        # Extraire les colonnes pour la création d'occasions (x) et la finition (y)
+        x_values = combined_data['npxG: xG sans les pénaltys']
+        y_values = combined_data['Buts (sans les pénaltys)']
+    
+        # Tracer les joueurs de l'équipe 1 avec des points rouges
+        team1_scatter = ax.scatter(team1_players['npxG: xG sans les pénaltys'], team1_players['Buts (sans les pénaltys)'],
+                                   color='red', edgecolor='black', s=200, zorder=1, label=team1_name)
+    
+        # Tracer les joueurs de l'équipe 2 avec des points bleus
+        team2_scatter = ax.scatter(team2_players['npxG: xG sans les pénaltys'], team2_players['Buts (sans les pénaltys)'],
+                                   color='blue', edgecolor='black', s=200, zorder=1, label=team2_name)
+    
+        # Ajuster automatiquement les limites de l'axe en fonction des valeurs min/max
+        x_min, x_max = np.floor(x_values.min()) - 1 , np.ceil(x_values.max()) + 1
+        y_min, y_max = np.floor(y_values.min()) - 1 , np.ceil(y_values.max()) + 1
+        ax.set_xlim(x_min, x_max)
+        ax.set_ylim(y_min, y_max)
+    
+        # Afficher les noms des joueurs des deux équipes
+        displayed_names = []
+    
+        # Affichage des noms pour l'équipe 1
+        for i, row in team1_players.iterrows():
+            name = row['player_name']
+            x, y = row['npxG: xG sans les pénaltys'], row['Buts (sans les pénaltys)']
+    
+            if not any(np.linalg.norm([x - dx, y - dy]) < (threshold_distance / 10) for dx, dy in displayed_names):
+                ax.text(x + 0.2, y + 0.1, name, fontsize=12, ha='right', va='bottom', fontweight='bold', color='white', zorder=3)
+                displayed_names.append((x, y))
+    
+        # Affichage des noms pour l'équipe 2
+        for i, row in team2_players.iterrows():
+            name = row['player_name']
+            x, y = row['npxG: xG sans les pénaltys'], row['Buts (sans les pénaltys)']
+    
+            if not any(np.linalg.norm([x - dx, y - dy]) < (threshold_distance / 2) for dx, dy in displayed_names):
+                ax.text(x + 0.2, y + 0.1, name, fontsize=12, ha='right', va='bottom', fontweight='bold', color='white', zorder=3)
+                displayed_names.append((x, y))
+    
+        # Ajouter le titre en blanc et en gras
+        ax.set_title(f'Comparaison - ({team1_name} vs {team2_name})', fontsize=25, color='white', fontweight='bold')
+    
+        # Ajouter les labels des axes en fonction des nouvelles variables
+        ax.set_xlabel('Création d\'occasions (npxG - expected goals sans pénaltys)', fontsize=16, color='white', fontweight='bold')
+        ax.set_ylabel('Finition des occasions (Buts sans pénaltys)', fontsize=16, color='white', fontweight='bold')
+    
+        # Ajouter l'étiquette Twitter
+        ax.text(0.5, 0.75, f"@TarbouchData", fontsize=14, color='white', fontweight='bold', ha='left', transform=ax.transAxes, alpha=0.8)
+    
+        # Appliquer la personnalisation des axes (contours blancs et épais)
+        self.customize_axes(ax)
+    
+        # Ajouter les ticks des axes (graduations) en blanc
+        ax.tick_params(axis='x', colors='white', labelsize=14)
+        ax.tick_params(axis='y', colors='white', labelsize=14)
+    
+        # Ajouter les ticks pour montrer les valeurs de progression moyenne par match (seulement des entiers)
+        ax.set_xticks(np.arange(x_min, x_max + 1, 1))
+        ax.set_yticks(np.arange(y_min, y_max + 1, 1))
+    
+        # Ajouter la légende pour indiquer les équipes
+        ax.legend(loc='upper left', fontsize=14, facecolor='white', framealpha=0.5)
+    
+        # Sauvegarder le fichier et afficher le graphique
+        plt.savefig(f"viz_data/comparaison_tentatives_reussites_{team1_name}_vs_{team2_name}.jpeg", format='jpeg', dpi=300)
+        plt.show()
+    
+    def compare_teams(self, team1_name, team2_name, threshold_distance=1):
+        """Compare deux équipes en affichant les joueurs sur un graphique basé sur création d'occasions (tentatives) et finition (réussites)."""
+
+        # Créer une figure avec des dimensions adaptées pour les appareils mobiles
+        fig = plt.figure(figsize=(16, 9))  # Largeur 16, hauteur 9 pour un ajustement mobile
+
+        # Créer le fond en dégradé pour l'ensemble de la figure
+        self.create_gradient_background(fig)
+
+        # Ajouter un axe pour le graphique principal, avec un fond transparent
+        ax = fig.add_subplot(111, facecolor='none')  # Fond transparent
+
+        # Filtrer les données pour chaque équipe
+        team1_players = self.players_data[self.players_data['Team Name'] == team1_name]
+        team2_players = self.players_data[self.players_data['Team Name'] == team2_name]
+
+        # Exclure les joueurs ayant x=0 ou y=0
+        team1_players = team1_players[(team1_players['npxG: xG sans les pénaltys'] > 0) & 
+                                      (team1_players['Buts (sans les pénaltys)'] > 0)]
+        team2_players = team2_players[(team2_players['npxG: xG sans les pénaltys'] > 0) & 
+                                      (team2_players['Buts (sans les pénaltys)'] > 0)]
+
+        if team1_players.empty:
+            print(f"Aucun joueur trouvé pour l'équipe {team1_name} après filtrage.")
+            return
+
+        if team2_players.empty:
+            print(f"Aucun joueur trouvé pour l'équipe {team2_name} après filtrage.")
+            return
+
+        # Combiner les données des deux équipes pour calculer les valeurs min/max
+        combined_data = pd.concat([team1_players, team2_players])
+
+        # Extraire les colonnes pour la création d'occasions (x) et la finition (y)
+        x_values = combined_data['npxG: xG sans les pénaltys']
+        y_values = combined_data['Buts (sans les pénaltys)']
+
+        # Tracer les joueurs de l'équipe 1 avec des points rouges
+        team1_scatter = ax.scatter(team1_players['npxG: xG sans les pénaltys'], team1_players['Buts (sans les pénaltys)'],
+                                   color='red', edgecolor='black', s=200, zorder=1, label=team1_name)
+
+        # Tracer les joueurs de l'équipe 2 avec des points bleus
+        team2_scatter = ax.scatter(team2_players['npxG: xG sans les pénaltys'], team2_players['Buts (sans les pénaltys)'],
+                                   color='blue', edgecolor='black', s=200, zorder=1, label=team2_name)
+
+        # Ajuster automatiquement les limites de l'axe en fonction des valeurs min/max
+        x_min, x_max = np.floor(x_values.min()) - 0.1 , np.ceil(x_values.max()) - 1.5
+        y_min, y_max = np.floor(y_values.min()) - 0.1 , np.ceil(y_values.max()) - 1.5
+        ax.set_xlim(x_min, x_max)
+        ax.set_ylim(y_min, y_max)
+
+        # Afficher les noms des joueurs des deux équipes
+        displayed_names = []
+
+        # Affichage des noms pour l'équipe 1
+        for i, row in team1_players.iterrows():
+            name = row['player_name']
+            x, y = row['npxG: xG sans les pénaltys'], row['Buts (sans les pénaltys)']
+
+            if not any(np.linalg.norm([x - dx, y - dy]) < (threshold_distance / 100) for dx, dy in displayed_names):
+                ax.text(x + 0.02, y + 0.01, name, fontsize=12, ha='right', va='bottom', fontweight='bold', color='white', zorder=3)
+                displayed_names.append((x, y))
+
+        # Affichage des noms pour l'équipe 2
+        for i, row in team2_players.iterrows():
+            name = row['player_name']
+            x, y = row['npxG: xG sans les pénaltys'], row['Buts (sans les pénaltys)']
+
+            if not any(np.linalg.norm([x - dx, y - dy]) < (threshold_distance / 100) for dx, dy in displayed_names):
+                ax.text(x + 0.02, y + 0.01, name, fontsize=12, ha='right', va='bottom', fontweight='bold', color='white', zorder=3)
+                displayed_names.append((x, y))
+
+        # Ajouter le titre en blanc et en gras
+        ax.set_title(f'Comparaison - ({team1_name} vs {team2_name})', fontsize=25, color='white', fontweight='bold')
+
+        # Ajouter les labels des axes en fonction des nouvelles variables
+        ax.set_xlabel('Création d\'occasions/90 (npxG - expected goals sans pénaltys)', fontsize=16, color='white', fontweight='bold')
+        ax.set_ylabel('Finition des occasions/90 (Buts sans pénaltys)', fontsize=16, color='white', fontweight='bold')
+
+        # Ajouter l'étiquette Twitter
+        ax.text(0.5, 0.75, f"@TarbouchData", fontsize=14, color='white', fontweight='bold', ha='left', transform=ax.transAxes, alpha=0.8)
+
+        # Appliquer la personnalisation des axes (contours blancs et épais)
+        self.customize_axes(ax)
+
+        # Ajouter les ticks des axes (graduations) en blanc
+        ax.tick_params(axis='x', colors='white', labelsize=14)
+        ax.tick_params(axis='y', colors='white', labelsize=14)
+
+        # Ajouter les ticks pour montrer les valeurs de progression moyenne par match (seulement des entiers)
+        ax.set_xticks(np.arange(x_min, x_max + 1, 0.25))
+        ax.set_yticks(np.arange(y_min, y_max + 1, 0.25))
+
+        # Ajouter la légende pour indiquer les équipes
+        ax.legend(loc='upper left', fontsize=14, facecolor='white', framealpha=0.5)
+
+        # Sauvegarder le fichier et afficher le graphique
+        plt.savefig(f"viz_data/comparaison_tentatives_reussites_{team1_name}_vs_{team2_name}.jpeg", format='jpeg', dpi=300)
+        plt.show()

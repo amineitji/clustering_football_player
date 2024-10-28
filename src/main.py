@@ -9,8 +9,9 @@ def main():
     print("2. Comparer un joueur avec les autres de son poste (clustering)")
     print("3. Comparer un joueur de référence avec plusieurs autres (clustering multiple)")
     print("4. Comparer plusieurs joueurs indépendamment des postes (PCA)")
+    print("5. Comparer deux équipes")
 
-    choice = input("Entrez le numéro de l'option (1, 2, 3 ou 4) : ")
+    choice = input("Entrez le numéro de l'option (1, 2, 3, 4 ou 5) : ")
 
     # Charger les données
     file_path = 'data/cleaned_scouting_report.csv'
@@ -106,8 +107,31 @@ def main():
         visualizer = DataVisualizer(offensive_features, defensive_features, color1="#000000", color2="#3b3700")
         visualizer.clustering_players_pca_comparison(player_names, data_extractor.data, offensive_features, defensive_features)
 
+    elif choice == '5':
+        # Option 5 : Comparer deux équipes
+        team1_name = input("Entrez le nom de la première équipe : ")
+        team2_name = input("Entrez le nom de la deuxième équipe : ")
+    
+        # Définir les caractéristiques à utiliser
+        #offensive_features = ['Passes progressives']
+        #defensive_features = ['Possessions progressives']
+
+        tentatives = [
+            'npxG: xG sans les pénaltys', 
+        ]
+
+        reussites = [
+            'Buts (sans les pénaltys)',
+        ]
+    
+        # Initialiser le visualiseur avec les données appropriées
+        filtered_features = data_extractor.data[tentatives + reussites].dropna()
+    
+        visualizer = DataVisualizer(filtered_features, data_extractor.data, color1="#000000", color2="#3b3700")
+        visualizer.compare_teams(team1_name, team2_name)
+
     else:
-        print("Option invalide. Veuillez entrer 1, 2, 3 ou 4.")
+        print("Option invalide. Veuillez entrer 1, 2, 3, 4 ou 5.")
 
 if __name__ == "__main__":
     main()
