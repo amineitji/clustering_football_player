@@ -10,8 +10,9 @@ def main():
     print("3. Comparer un joueur de référence avec plusieurs autres (clustering multiple)")
     print("4. Comparer plusieurs joueurs indépendamment des postes (PCA)")
     print("5. Comparer deux équipes")
+    print("6. Visualiser les joueurs par poste")
 
-    choice = input("Entrez le numéro de l'option (1, 2, 3, 4 ou 5) : ")
+    choice = input("Entrez le numéro de l'option (1, 2, 3, 4, 5 ou 6) : ")
 
     # Charger les données
     file_path = 'data/cleaned_scouting_report.csv'
@@ -36,6 +37,33 @@ def main():
         # Initialiser le visualiseur et afficher
         visualizer = DataVisualizer(filtered_features, player_data, color1="#000000", color2="#3b3700")
         visualizer.plot_players_by_team(team_name)
+
+    elif choice == '6':
+        # Option 6 : Visualiser les joueurs par poste avec un filtre d'équipes
+        position = input("Entrez le poste des joueurs (ex : Attaquant, Milieu, Défenseur) : ")
+        team_names_input = input("Entrez les noms des équipes séparés par des virgules (laisser vide pour toutes les équipes) : ")
+    
+        # Transformer la chaîne de caractères en liste d'équipes, si non vide
+        team_names = [name.strip() for name in team_names_input.split(',')] if team_names_input else None
+    
+        # Extraire les données des joueurs par poste et équipes spécifiées
+        player_data = data_extractor.get_players_by_position_and_team(position, team_names)
+    
+        if player_data.empty:
+            print(f"Aucun joueur trouvé pour le poste {position} avec les équipes spécifiées.")
+            return
+    
+        # Caractéristiques offensives et défensives
+        offensive_features = ['Passes progressives']
+        defensive_features = ['Possessions progressives']
+        
+        # Filtrer les données pour les caractéristiques choisies
+        filtered_features = player_data[offensive_features + defensive_features].dropna()
+    
+        # Initialiser le visualiseur et afficher avec le filtre d'équipes
+        visualizer = DataVisualizer(filtered_features, player_data, color1="#000000", color2="#3b3700")
+        visualizer.plot_players_by_position(position, team_names=team_names)
+    
 
     elif choice == '2':
         # Option 2 : Comparer un joueur avec les autres de son poste
@@ -112,10 +140,6 @@ def main():
         team1_name = input("Entrez le nom de la première équipe : ")
         team2_name = input("Entrez le nom de la deuxième équipe : ")
     
-        # Définir les caractéristiques à utiliser
-        #offensive_features = ['Passes progressives']
-        #defensive_features = ['Possessions progressives']
-
         tentatives = [
             'npxG: xG sans les pénaltys', 
         ]
@@ -131,7 +155,7 @@ def main():
         visualizer.compare_teams(team1_name, team2_name)
 
     else:
-        print("Option invalide. Veuillez entrer 1, 2, 3, 4 ou 5.")
+        print("Option invalide. Veuillez entrer 1, 2, 3, 4, 5 ou 6.")
 
 if __name__ == "__main__":
     main()

@@ -21,6 +21,17 @@ class DataExtractor:
 
     def get_players_by_team(self, team_name):
         return self.data[self.data['Team Name'] == team_name]
+    
+    def get_players_by_position(self, position):
+        return self.data[self.data['Position'] == position]
+    
+    def get_players_by_position_and_team(self, position, team_names=None):
+        # Filtrer par position et, si spécifié, par noms d'équipes
+        if team_names:
+            return self.data[(self.data['Position'] == position) & (self.data['Team Name'].isin(team_names))]
+        else:
+            return self.data[self.data['Position'] == position]
+    
 
     def filter_features(self, player_data, offensive_features, defensive_features):
         """Filtrer les caractéristiques offensives et défensives spécifiées."""

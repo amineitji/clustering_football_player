@@ -105,6 +105,84 @@ class DataVisualizer:
         plt.savefig(f"viz_data/projection_passes_possessions_{team_name}.jpeg", format='jpeg', dpi=300)
         plt.show()
 
+
+
+    def plot_players_by_position(self, position_player, team_names=None, threshold_distance=1):
+        """Affiche tous les joueurs d'un poste donné dans un graphique, avec un filtre d'équipes spécifié."""
+        # Créer une figure avec des dimensions adaptées pour les appareils mobiles
+        fig = plt.figure(figsize=(16, 9))  # Largeur 16, hauteur 9 pour un ajustement mobile
+
+        # Créer le fond en dégradé pour l'ensemble de la figure
+        self.create_gradient_background(fig)
+
+        # Ajouter un axe pour le graphique principal, avec un fond transparent
+        ax = fig.add_subplot(111, facecolor='none')  # Fond transparent
+
+        # Extraire les colonnes pour les passes progressives (X) et les possessions progressives (Y)
+        x_values = self.features['Passes progressives']
+        y_values = self.features['Possessions progressives']
+
+        # Filtrer les données pour ne garder que les joueurs du poste donné
+        filtered_players = self.players_data[self.players_data['Position'] == position_player]
+
+        # Appliquer un filtre sur les équipes, si `team_names` est spécifié
+        if team_names is not None:
+            filtered_players = filtered_players[filtered_players['Team Name'].isin(team_names)]
+
+        if filtered_players.empty:
+            print(f"Aucun joueur trouvé pour le poste {position_player} avec les équipes spécifiées.")
+            return
+
+        # Tracer les joueurs de l'équipe filtrée
+        scatter = ax.scatter(x_values, y_values, color='red', edgecolor='black', s=200, zorder=1)
+
+        # Ajuster les limites de l'axe
+        ax.set_xlim(np.floor(np.min(x_values)) - 1, np.ceil(np.max(x_values)) + 1)
+        ax.set_ylim(np.floor(np.min(y_values)) - 1, np.ceil(np.max(y_values)) + 1)
+
+        # Afficher les noms des joueurs de l'équipe
+        displayed_names = []
+        for i, row in filtered_players.iterrows():
+            name = row['player_name']
+            x, y = row['Passes progressives'], row['Possessions progressives']
+
+            # Éviter la superposition des noms avec une condition plus stricte pour x que pour y
+            x_threshold = threshold_distance / 1.5 # Distance plus importante pour x
+            y_threshold = threshold_distance / 3.25  # Distance moins stricte pour y
+
+            if not any(
+                np.abs(x - dx) < x_threshold and np.abs(y - dy) < y_threshold
+                for dx, dy in displayed_names
+            ):
+                ax.text(x + 0.2, y + 0.1, name, fontsize=12, ha='right', va='bottom', fontweight='bold', color='white', zorder=3)
+                displayed_names.append((x, y))
+
+
+        # Ajouter le titre en blanc et en gras
+        ax.set_title(f'Projection des Passes et des Possessions progressives - {position_player}', fontsize=25, color='white', fontweight='bold')
+
+        # Ajouter les labels des axes en blanc et en gras
+        ax.set_xlabel('Passes progressives (par 90")', fontsize=16, color='white', fontweight='bold')
+        ax.set_ylabel('Possessions progressives (par 90")', fontsize=16, color='white', fontweight='bold')
+
+        # Ajouter l'étiquette Twitter
+        ax.text(0.5, 0.75, f"@TarbouchData", fontsize=14, color='white', fontweight='bold', ha='left', transform=ax.transAxes, alpha=0.8)
+
+        # Personnaliser les axes avec des contours blancs et épais
+        self.customize_axes(ax)
+
+        # Ajouter les ticks des axes en blanc
+        ax.tick_params(axis='x', colors='white', labelsize=14)
+        ax.tick_params(axis='y', colors='white', labelsize=14)
+
+        # Ajouter des ticks pour afficher les valeurs entières
+        ax.set_xticks(np.arange(np.floor(np.min(x_values)), np.ceil(np.max(x_values)) + 1, 1))
+        ax.set_yticks(np.arange(np.floor(np.min(y_values)), np.ceil(np.max(y_values)) + 1, 1))
+
+        # Sauvegarder l'image et afficher le graphique
+        plt.savefig(f"viz_data/projection_passes_possessions_{position_player}.jpeg", format='jpeg', dpi=300)
+        plt.show()
+
     def clustering_player_comparison(self, player_name, data, offensive_features, defensive_features):
         """Effectuer un clustering et comparer un joueur avec ses pairs au même poste, avec 2 colonnes et fond en dégradé."""
         output_dir = 'viz_data/clustering'
