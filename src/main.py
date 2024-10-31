@@ -66,20 +66,55 @@ def main():
     
 
     elif choice == '2':
-        # Option 2 : Comparer un joueur avec les autres de son poste
-        player_name = input("Entrez le nom du joueur : ")
-
-        # Définir les caractéristiques à utiliser
-        offensive_features = [
-            'Buts (sans les pénaltys)', 'npxG: xG sans les pénaltys', 'Passes décisives', 
-            'xAG: Prévu(s) Buts assistés', 'npxG + xAG', 'Actions menant à un tir', 
-            'Total des tirs', 'Passes progressives', 'Possessions progressives', 'Dribbles réussis'
+        # Define features based on position
+        # TODO : FAIRE CE SYSTEME AUTOMATIQUEMENT POUR TOUTES FONCTIONS
+        # Defender (DF) features
+        offensive_features_DF = [
+            'Passes progressives', 'Possessions progressives'
         ]
-        defensive_features = [
+        defensive_features_DF = [
             'Tacles', 'Interceptions', 'Balles contrées', 'Dégagements', 'Duel aérien gagnés'
         ]
 
-        # Appeler la méthode de comparaison via clustering
+        # Midfielder (MF) features
+        offensive_features_MF = [
+            'Passes décisives', 'xAG: Prévu(s) Buts assistés', 'npxG + xAG', 'Actions menant à un tir', 
+            'Passes progressives', 'Possessions progressives', 'Dribbles réussis', 'Passes progressives reçues',
+            'Touches (SurfRépOff)'
+        ]
+        defensive_features_MF = [
+            'Tacles', 'Interceptions', 'Duel aérien gagnés'
+        ]
+
+        # Forward (FW) features
+        offensive_features_FW = [
+            'Buts (sans les pénaltys)', 'npxG: xG sans les pénaltys', 'Passes décisives', 
+            'xAG: Prévu(s) Buts assistés', 'npxG + xAG', 'Total des tirs', 'Dribbles réussis', 'Passes progressives reçues',
+            'Touches (SurfRépOff)'
+        ]
+        defensive_features_FW = [
+            'Interceptions', 'Balles contrées'  # Minimal defensive metrics for forwards
+        ]
+
+        # User input for player name and position
+        player_name = input("Entrez le nom du joueur : ")
+        player_position = input("Entrez le poste du joueur (DF, MF, FW) : ")
+
+        # Select features based on player position
+        if player_position == "DF":
+            offensive_features = offensive_features_DF
+            defensive_features = defensive_features_DF
+        elif player_position == "MF":
+            offensive_features = offensive_features_MF
+            defensive_features = defensive_features_MF
+        elif player_position == "FW":
+            offensive_features = offensive_features_FW
+            defensive_features = defensive_features_FW
+        else:
+            print("Poste invalide. Veuillez entrer DF, MF ou FW.")
+            exit()
+
+        # Call clustering comparison method with appropriate features
         visualizer = DataVisualizer(offensive_features, defensive_features, color1="#000000", color2="#3b3700")
         visualizer.clustering_player_comparison(player_name, data_extractor.data, offensive_features, defensive_features)
 

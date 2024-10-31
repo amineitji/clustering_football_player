@@ -254,6 +254,7 @@ class DataVisualizer:
         selected_cluster = position_players[position_players['player_name'] == player_name]['cluster'].values[0]
         selected_cluster_points = position_players[position_players['cluster'] == selected_cluster][['PCA_Component_1', 'PCA_Component_2']].values
 
+        
         # Mettre en évidence le cluster du joueur sélectionné
         ax1.scatter(
             selected_cluster_points[:, 0], 
@@ -328,6 +329,16 @@ class DataVisualizer:
                 cell.set_facecolor('none')  # Cases transparentes pour les autres lignes
 
 
+        # Calculer les extrémums et les noms des joueurs associés pour PCA_Component_1 et PCA_Component_2
+        min_pca1_row = position_players.loc[position_players['PCA_Component_1'].idxmin()]
+        max_pca1_row = position_players.loc[position_players['PCA_Component_1'].idxmax()]
+        min_pca2_row = position_players.loc[position_players['PCA_Component_2'].idxmin()]
+        max_pca2_row = position_players.loc[position_players['PCA_Component_2'].idxmax()]
+        
+        # Afficher les extrémums avec le nom des joueurs
+        print(f"Extrémum de PCA_Component_1: min = {min_pca1_row['PCA_Component_1']} ({min_pca1_row['player_name']}), max = {max_pca1_row['PCA_Component_1']} ({max_pca1_row['player_name']})")
+        print(f"Extrémum de PCA_Component_2: min = {min_pca2_row['PCA_Component_2']} ({min_pca2_row['player_name']}), max = {max_pca2_row['PCA_Component_2']} ({max_pca2_row['player_name']})")
+        
         # Sauvegarder le fichier et afficher le graphique
         plt.subplots_adjust(left=0.05)
 
