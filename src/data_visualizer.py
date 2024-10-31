@@ -225,7 +225,7 @@ class DataVisualizer:
         position_players['PCA_Component_2'] = defensive_component.flatten()
 
         # Clustering avec KMeans
-        kmeans = KMeans(n_clusters=3)
+        kmeans = KMeans(n_clusters=1)
         position_players['cluster'] = kmeans.fit_predict(np.column_stack([offensive_component, defensive_component]))
 
         # Calculer les distances par rapport au joueur sélectionné
@@ -334,11 +334,11 @@ class DataVisualizer:
         max_pca1_row = position_players.loc[position_players['PCA_Component_1'].idxmax()]
         min_pca2_row = position_players.loc[position_players['PCA_Component_2'].idxmin()]
         max_pca2_row = position_players.loc[position_players['PCA_Component_2'].idxmax()]
-        
+
         # Afficher les extrémums avec le nom des joueurs
         print(f"Extrémum de PCA_Component_1: min = {min_pca1_row['PCA_Component_1']} ({min_pca1_row['player_name']}), max = {max_pca1_row['PCA_Component_1']} ({max_pca1_row['player_name']})")
         print(f"Extrémum de PCA_Component_2: min = {min_pca2_row['PCA_Component_2']} ({min_pca2_row['player_name']}), max = {max_pca2_row['PCA_Component_2']} ({max_pca2_row['player_name']})")
-        
+
         # Sauvegarder le fichier et afficher le graphique
         plt.subplots_adjust(left=0.05)
 

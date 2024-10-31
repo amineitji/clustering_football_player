@@ -3,6 +3,15 @@ from data_extractor import DataExtractor
 from data_visualizer import DataVisualizer
 
 def main():
+    # Définir les groupes de positions
+    position_groups = {
+        '1. Milieu': ['DM', 'CM', 'AM'],
+        '2. Attaquant axial': ['CF', 'SS', 'MO'],
+        '3. Ailier': ['LW', 'RW', 'RM', 'LM'],
+        '4. Défenseur': ['CB'],
+        '5. Latéral': ['RB', 'LB'],
+    }
+
     # Choisir la fonction à exécuter
     print("Choisissez une fonction à exécuter :")
     print("1. Visualiser les joueurs d'une équipe")
@@ -18,8 +27,15 @@ def main():
     file_path = 'data/cleaned_scouting_report.csv'
     data_extractor = DataExtractor(file_path)
 
+    # Fonction utilitaire pour obtenir les positions en fonction du numéro du groupe
+    def get_positions_by_choice(choice):
+        group_key = f"{choice}. "  # Préfixe pour récupérer le bon groupe dans le dictionnaire
+        for key in position_groups.keys():
+            if key.startswith(group_key):
+                return position_groups[key]
+        return None
+
     if choice == '1':
-        # Option 1 : Visualiser les joueurs d'une équipe
         team_name = input("Entrez le nom de l'équipe : ")
         player_data = data_extractor.get_players_by_team(team_name)
 
@@ -27,165 +43,137 @@ def main():
             print(f"Aucun joueur trouvé pour l'équipe {team_name}.")
             return
 
-        # Caractéristiques offensives et défensives
         offensive_features = ['Passes progressives']
         defensive_features = ['Possessions progressives']
         
-        # Filtrer les données
         filtered_features = player_data[offensive_features + defensive_features].dropna()
-
-        # Initialiser le visualiseur et afficher
         visualizer = DataVisualizer(filtered_features, player_data, color1="#000000", color2="#3b3700")
         visualizer.plot_players_by_team(team_name)
 
     elif choice == '6':
-        # Option 6 : Visualiser les joueurs par poste avec un filtre d'équipes
-        position = input("Entrez le poste des joueurs (ex : Attaquant, Milieu, Défenseur) : ")
+        print("Choisissez un poste :")
+        for key in position_groups:
+            print(key)
+        
+        position_choice = input("Entrez le numéro du poste : ")
+        positions = get_positions_by_choice(position_choice)
+
+        if not positions:
+            print("Poste invalide.")
+            return
+
         team_names_input = input("Entrez les noms des équipes séparés par des virgules (laisser vide pour toutes les équipes) : ")
-    
-        # Transformer la chaîne de caractères en liste d'équipes, si non vide
         team_names = [name.strip() for name in team_names_input.split(',')] if team_names_input else None
     
-        # Extraire les données des joueurs par poste et équipes spécifiées
-        player_data = data_extractor.get_players_by_position_and_team(position, team_names)
+        player_data = data_extractor.get_players_by_multiple_criteria(player_names=None, positions=positions, team_names=team_names, ages=None)
     
         if player_data.empty:
-            print(f"Aucun joueur trouvé pour le poste {position} avec les équipes spécifiées.")
+            print(f"Aucun joueur trouvé pour le poste choisi avec les équipes spécifiées.")
             return
     
-        # Caractéristiques offensives et défensives
         offensive_features = ['Passes progressives']
         defensive_features = ['Possessions progressives']
         
-        # Filtrer les données pour les caractéristiques choisies
         filtered_features = player_data[offensive_features + defensive_features].dropna()
-    
-        # Initialiser le visualiseur et afficher avec le filtre d'équipes
         visualizer = DataVisualizer(filtered_features, player_data, color1="#000000", color2="#3b3700")
-        visualizer.plot_players_by_position(position, team_names=team_names)
-    
+        visualizer.plot_players_by_position(position_choice, team_names=team_names)
 
     elif choice == '2':
-        # Define features based on position
-        # TODO : FAIRE CE SYSTEME AUTOMATIQUEMENT POUR TOUTES FONCTIONS
-        # Defender (DF) features
-        offensive_features_DF = [
-            'Passes progressives', 'Possessions progressives'
-        ]
-        defensive_features_DF = [
-            'Tacles', 'Interceptions', 'Balles contrées', 'Dégagements', 'Duel aérien gagnés'
-        ]
-
-        # Midfielder (MF) features
-        offensive_features_MF = [
-            'Passes décisives', 'xAG: Prévu(s) Buts assistés', 'npxG + xAG', 'Actions menant à un tir', 
-            'Passes progressives', 'Possessions progressives', 'Dribbles réussis', 'Passes progressives reçues',
-            'Touches (SurfRépOff)'
-        ]
-        defensive_features_MF = [
-            'Tacles', 'Interceptions', 'Duel aérien gagnés'
-        ]
-
-        # Forward (FW) features
-        offensive_features_FW = [
-            'Buts (sans les pénaltys)', 'npxG: xG sans les pénaltys', 'Passes décisives', 
-            'xAG: Prévu(s) Buts assistés', 'npxG + xAG', 'Total des tirs', 'Dribbles réussis', 'Passes progressives reçues',
-            'Touches (SurfRépOff)'
-        ]
-        defensive_features_FW = [
-            'Interceptions', 'Balles contrées'  # Minimal defensive metrics for forwards
-        ]
-
-        # User input for player name and position
         player_name = input("Entrez le nom du joueur : ")
-        player_position = input("Entrez le poste du joueur (DF, MF, FW) : ")
+        print("Choisissez un groupe de poste :")
+        for key in position_groups:
+            print(key)
 
-        # Select features based on player position
-        if player_position == "DF":
-            offensive_features = offensive_features_DF
-            defensive_features = defensive_features_DF
-        elif player_position == "MF":
-            offensive_features = offensive_features_MF
-            defensive_features = defensive_features_MF
-        elif player_position == "FW":
-            offensive_features = offensive_features_FW
-            defensive_features = defensive_features_FW
+        position_choice = input("Entrez le numéro du poste : ")
+        positions = get_positions_by_choice(position_choice)
+
+        if not positions:
+            print("Poste invalide.")
+            return
+
+        if '1' in position_choice: # '1. Milieu': ['DM', 'CM', 'AM']
+            offensive_features = [
+                'Passes décisives', 'xAG: Prévu(s) Buts assistés', 'npxG + xAG', 'Actions menant à un tir', 
+                'Passes progressives', 'Possessions progressives'
+            ]
+            defensive_features = ['Tacles', 'Interceptions']
+
+        elif '2' in position_choice: # '2. Attaquant axial': ['CF', 'SS', 'MO']
+            offensive_features = [
+                'Buts (sans les pénaltys)', 'npxG: xG sans les pénaltys', 'Passes décisives', 
+                'xAG: Prévu(s) Buts assistés', 'npxG + xAG', 'Actions menant à un tir', 
+                'Total des tirs', 'Passes progressives reçues', 'Touches (SurfRépOff)'
+            ]
+            defensive_features = ['Tacles', 'Interceptions']
+
+        elif '3' in position_choice: # '3. Ailier': ['LW', 'RW', 'RM', 'LM']
+            offensive_features = [
+                'Buts (sans les pénaltys)', 'npxG: xG sans les pénaltys', 'Passes décisives', 
+                'xAG: Prévu(s) Buts assistés', 'npxG + xAG', 'Actions menant à un tir', 
+                'Total des tirs', 'Possessions progressives', 'Dribbles réussis',
+                'Passes progressives reçues', 'Touches (SurfRépOff)'
+            ]
+            defensive_features = ['Tacles', 'Interceptions']
+
+        elif '4' in position_choice: # '4. Défenseur': ['CB']
+            offensive_features = ['Passes progressives', 'Possessions progressives']
+            defensive_features = ['Tacles', 'Interceptions', 'Balles contrées', 'Dégagements', 'Duel aérien gagnés']
+
+        elif '5' in position_choice: #  '5. Latéral': ['RB', 'LB']
+            offensive_features = ['Passes progressives', 'Possessions progressives', 'Dribbles réussis', 
+                                  'Actions menant à un tir', 'Total des tirs']
+            defensive_features = ['Tacles', 'Interceptions', 'Balles contrées', 'Dégagements', 'Duel aérien gagnés']
         else:
-            print("Poste invalide. Veuillez entrer DF, MF ou FW.")
-            exit()
+            print("Poste invalide.")
+            return
 
-        # Call clustering comparison method with appropriate features
         visualizer = DataVisualizer(offensive_features, defensive_features, color1="#000000", color2="#3b3700")
         visualizer.clustering_player_comparison(player_name, data_extractor.data, offensive_features, defensive_features)
 
     elif choice == '3':
-        # Option 3 : Comparer un joueur de référence avec plusieurs autres
         player_names_input = input("Entrez les noms des joueurs séparés par des virgules (le premier sera le joueur de référence) : ")
-
-        # Transformer la chaîne de caractères en liste de joueurs
         player_names = [name.strip() for name in player_names_input.split(',')]
 
-        # Vérifier qu'il y a au moins deux joueurs pour comparer
         if len(player_names) < 2:
             print("Veuillez entrer au moins deux joueurs pour comparer.")
             return
 
-        # Définir les caractéristiques à utiliser
         offensive_features = [
             'Buts (sans les pénaltys)', 'npxG: xG sans les pénaltys', 'Passes décisives', 
             'xAG: Prévu(s) Buts assistés', 'npxG + xAG', 'Actions menant à un tir', 
             'Total des tirs', 'Passes progressives', 'Possessions progressives', 'Dribbles réussis'
         ]
-        defensive_features = [
-            'Tacles', 'Interceptions', 'Balles contrées', 'Dégagements', 'Duel aérien gagnés'
-        ]
-
-        # Appeler la méthode de comparaison multiple avec le premier joueur comme référence
+        defensive_features = ['Tacles', 'Interceptions', 'Balles contrées', 'Dégagements', 'Duel aérien gagnés']
+        
         visualizer = DataVisualizer(offensive_features, defensive_features, color1="#000000", color2="#3b3700")
         visualizer.clustering_multiple_players_comparison_with_reference(player_names, data_extractor.data, offensive_features, defensive_features)
 
     elif choice == '4':
-        # Option 4 : Comparer plusieurs joueurs avec PCA uniquement
         player_names_input = input("Entrez les noms des joueurs séparés par des virgules : ")
-
-        # Transformer la chaîne de caractères en liste de joueurs
         player_names = [name.strip() for name in player_names_input.split(',')]
 
-        # Vérifier qu'il y a au moins deux joueurs pour comparer
         if len(player_names) < 2:
             print("Veuillez entrer au moins deux joueurs pour comparer.")
             return
 
-        # Définir les caractéristiques à utiliser
         offensive_features = [
             'Buts (sans les pénaltys)', 'npxG: xG sans les pénaltys', 'Passes décisives', 
             'xAG: Prévu(s) Buts assistés', 'npxG + xAG', 'Actions menant à un tir', 
             'Total des tirs', 'Passes progressives', 'Possessions progressives', 'Dribbles réussis'
         ]
-        defensive_features = [
-            'Tacles', 'Interceptions', 'Balles contrées', 'Dégagements', 'Duel aérien gagnés'
-        ]
-
-        # Appeler la nouvelle méthode de clustering avec PCA
+        defensive_features = ['Tacles', 'Interceptions', 'Balles contrées', 'Dégagements', 'Duel aérien gagnés']
+        
         visualizer = DataVisualizer(offensive_features, defensive_features, color1="#000000", color2="#3b3700")
         visualizer.clustering_players_pca_comparison(player_names, data_extractor.data, offensive_features, defensive_features)
 
     elif choice == '5':
-        # Option 5 : Comparer deux équipes
         team1_name = input("Entrez le nom de la première équipe : ")
         team2_name = input("Entrez le nom de la deuxième équipe : ")
-    
-        tentatives = [
-            'npxG: xG sans les pénaltys', 
-        ]
 
-        reussites = [
-            'Buts (sans les pénaltys)',
-        ]
-    
-        # Initialiser le visualiseur avec les données appropriées
+        tentatives = ['npxG: xG sans les pénaltys']
+        reussites = ['Buts (sans les pénaltys)']
+        
         filtered_features = data_extractor.data[tentatives + reussites].dropna()
-    
         visualizer = DataVisualizer(filtered_features, data_extractor.data, color1="#000000", color2="#3b3700")
         visualizer.compare_teams(team1_name, team2_name)
 
