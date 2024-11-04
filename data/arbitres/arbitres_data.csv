@@ -1,0 +1,20 @@
+tournamentTemplateId,numGames,foulsPerGame,foulsPerTackle,penaltiesAwardedAgainstPerGame,yellowCdsPerGame,redCdsPerGame,homeWinRatio,awayWinRatio,drawRatio,officialId,firstName,lastName,name,countryId,numParticipations,fouls,tackles,penalties,yellowCds,redCds,wins,losses,homeWins,awayWins,draws,field,isOverall
+0,5,23.2,0.5714286,0.2,3.2,0.2,0.4,0.6,0.0,4,Thomas,Leonard,Thomas Leonard,0,10,116,203,1,16,1,0,0,4,6,0,2,True
+0,5,27.0,0.7627119,0.2,3.8,0.2,0.2,0.6,0.2,860,Abdelatif,Kherradji,Abdelatif Kherradji,0,10,135,177,1,19,1,0,0,2,6,2,2,True
+0,5,24.2,0.6612022,1.4,6.4,0.2,0.2,0.8,0.0,861,Benoît,Bastien,Benoît Bastien,0,10,121,183,7,32,1,0,0,2,8,0,2,True
+0,5,27.6,0.7752809,0.2,4.8,0.0,0.6,0.0,0.4,862,Hakim,Ben El Hadj,Hakim Ben El Hadj,0,10,138,178,1,24,0,0,0,6,0,4,2,True
+0,4,23.0,0.6433566,0.5,4.0,0.0,0.0,0.25,0.75,867,Jerome,Brisard,Jerome Brisard,0,8,92,143,2,16,0,0,0,0,2,6,2,True
+0,4,22.0,0.6769231,0.75,4.25,0.25,0.75,0.25,0.0,877,Florent,Batta,Florent Batta,0,8,88,130,3,17,1,0,0,6,2,0,2,True
+0,3,18.66667,0.4628099,0.0,2.0,0.6666667,0.3333333,0.3333333,0.3333333,880,François,Letexier,François Letexier,0,6,56,121,0,6,2,0,0,2,2,2,2,True
+0,3,26.66667,0.8510638,0.0,2.0,0.6666667,0.3333333,0.3333333,0.3333333,888,Romain,Lissorgue,Romain Lissorgue,0,6,80,94,0,6,2,0,0,2,2,2,2,True
+0,4,25.5,0.6415094,0.5,3.75,0.75,0.75,0.25,0.0,899,Benoît,Millot,Benoît Millot,0,8,102,159,2,15,3,0,0,6,2,0,2,True
+0,6,21.33333,0.5871559,0.0,4.0,0.3333333,0.5,0.3333333,0.1666667,909,Eric,Wattellier,Eric Wattellier,0,12,128,218,0,24,2,0,0,6,4,2,2,True
+0,6,23.0,0.6272727,0.5,4.333333,0.1666667,0.3333333,0.3333333,0.3333333,960,Willy,Delajod,Willy Delajod,0,12,138,220,3,26,1,0,0,4,4,4,2,True
+0,5,22.0,0.5164319,0.2,3.6,0.2,0.6,0.4,0.0,961,Clément,Turpin,Clément Turpin,0,10,110,213,1,18,1,0,0,6,4,0,2,True
+0,6,26.83333,0.6764706,0.6666667,4.666667,0.1666667,0.3333333,0.1666667,0.5,969,Jeremy,Stinat,Jeremy Stinat,0,12,161,238,4,28,1,0,0,4,2,6,2,True
+0,5,27.4,0.8353658,0.4,4.4,0.4,0.4,0.4,0.2,1076,Stéphanie,Frappart,Stéphanie Frappart,0,10,137,164,2,22,2,0,0,4,4,2,2,True
+0,5,26.2,0.7443182,0.4,3.0,0.0,0.0,0.4,0.6,1195,Bastien,Dechepy,Bastien Dechepy,0,10,131,176,2,15,0,0,0,0,4,6,2,True
+0,5,28.4,0.6574074,0.4,4.6,0.0,0.6,0.0,0.4,2853,Mathieu,Vernice,Mathieu Vernice,0,10,142,216,2,23,0,0,0,6,0,4,2,True
+0,4,19.5,0.4875,0.0,4.25,0.5,0.75,0.0,0.25,2884,Jeremie,Pignard,Jeremie Pignard,0,8,78,160,0,17,2,0,0,6,0,2,2,True
+0,5,25.8,0.6262136,0.6,3.4,0.2,0.6,0.2,0.2,3221,Gael,Angoula,Gael Angoula,0,10,129,206,3,17,1,0,0,6,2,2,2,True
+0,5,25.2,0.6428571,0.6,4.2,0.4,1.0,0.0,0.0,4272,Marc,Bollengier,Marc Bollengier,0,10,126,196,3,21,2,0,0,10,0,0,2,True

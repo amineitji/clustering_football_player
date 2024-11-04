@@ -352,8 +352,8 @@ class DataVisualizer:
         output_dir = 'viz_data/clustering'
         os.makedirs(output_dir, exist_ok=True)
 
-        # Sélectionner les joueurs par leurs noms
-        selected_players = data[data['player_name'].isin(player_names)]
+        valid_players = data['player_name'].isin(player_names)
+        selected_players = data[valid_players]
 
         if selected_players.empty:
             print(f"Aucun des joueurs {', '.join(player_names)} n'a été trouvé.")

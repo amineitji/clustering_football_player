@@ -129,6 +129,7 @@ def main():
 
         visualizer = DataVisualizer(offensive_features, defensive_features, color1="#000000", color2="#3b3700")
         visualizer.clustering_player_comparison(player_name, data_extractor.data, offensive_features, defensive_features)
+        
 
     elif choice == '3':
         player_names_input = input("Entrez les noms des joueurs séparés par des virgules (le premier sera le joueur de référence) : ")
@@ -138,12 +139,52 @@ def main():
             print("Veuillez entrer au moins deux joueurs pour comparer.")
             return
 
-        offensive_features = [
-            'Buts (sans les pénaltys)', 'npxG: xG sans les pénaltys', 'Passes décisives', 
-            'xAG: Prévu(s) Buts assistés', 'npxG + xAG', 'Actions menant à un tir', 
-            'Total des tirs', 'Passes progressives', 'Possessions progressives', 'Dribbles réussis'
-        ]
-        defensive_features = ['Tacles', 'Interceptions', 'Balles contrées', 'Dégagements', 'Duel aérien gagnés']
+        print("Choisissez un groupe de poste :")
+        for key in position_groups:
+            print(key)
+
+        position_choice = input("Entrez le numéro du poste : ")
+        positions = get_positions_by_choice(position_choice)
+
+        if not positions:
+            print("Poste invalide.")
+            return
+
+        if '1' in position_choice: # '1. Milieu': ['DM', 'CM', 'AM']
+            offensive_features = [
+                'Passes décisives', 'xAG: Prévu(s) Buts assistés', 'npxG + xAG', 'Actions menant à un tir', 
+                'Passes progressives', 'Possessions progressives'
+            ]
+            defensive_features = ['Tacles', 'Interceptions']
+
+        elif '2' in position_choice: # '2. Attaquant axial': ['CF', 'SS', 'MO']
+            offensive_features = [
+                'Buts (sans les pénaltys)', 'npxG: xG sans les pénaltys', 'Passes décisives', 
+                'xAG: Prévu(s) Buts assistés', 'npxG + xAG', 'Actions menant à un tir', 
+                'Total des tirs', 'Passes progressives reçues', 'Touches (SurfRépOff)'
+            ]
+            defensive_features = ['Tacles', 'Interceptions']
+
+        elif '3' in position_choice: # '3. Ailier': ['LW', 'RW', 'RM', 'LM']
+            offensive_features = [
+                'Buts (sans les pénaltys)', 'npxG: xG sans les pénaltys', 'Passes décisives', 
+                'xAG: Prévu(s) Buts assistés', 'npxG + xAG', 'Actions menant à un tir', 
+                'Total des tirs', 'Possessions progressives', 'Dribbles réussis',
+                'Passes progressives reçues', 'Touches (SurfRépOff)'
+            ]
+            defensive_features = ['Tacles', 'Interceptions']
+
+        elif '4' in position_choice: # '4. Défenseur': ['CB']
+            offensive_features = ['Passes progressives', 'Possessions progressives']
+            defensive_features = ['Tacles', 'Interceptions', 'Balles contrées', 'Dégagements', 'Duel aérien gagnés']
+
+        elif '5' in position_choice: #  '5. Latéral': ['RB', 'LB']
+            offensive_features = ['Passes progressives', 'Possessions progressives', 'Dribbles réussis', 
+                                  'Actions menant à un tir', 'Total des tirs']
+            defensive_features = ['Tacles', 'Interceptions', 'Balles contrées', 'Dégagements', 'Duel aérien gagnés']
+        else:
+            print("Poste invalide.")
+            return
         
         visualizer = DataVisualizer(offensive_features, defensive_features, color1="#000000", color2="#3b3700")
         visualizer.clustering_multiple_players_comparison_with_reference(player_names, data_extractor.data, offensive_features, defensive_features)
@@ -159,10 +200,11 @@ def main():
         offensive_features = [
             'Buts (sans les pénaltys)', 'npxG: xG sans les pénaltys', 'Passes décisives', 
             'xAG: Prévu(s) Buts assistés', 'npxG + xAG', 'Actions menant à un tir', 
-            'Total des tirs', 'Passes progressives', 'Possessions progressives', 'Dribbles réussis'
+            'Total des tirs', 'Possessions progressives', 'Dribbles réussis',
+            'Passes progressives reçues', 'Touches (SurfRépOff)'
         ]
-        defensive_features = ['Tacles', 'Interceptions', 'Balles contrées', 'Dégagements', 'Duel aérien gagnés']
-        
+        defensive_features = ['Tacles', 'Interceptions']
+
         visualizer = DataVisualizer(offensive_features, defensive_features, color1="#000000", color2="#3b3700")
         visualizer.clustering_players_pca_comparison(player_names, data_extractor.data, offensive_features, defensive_features)
 
