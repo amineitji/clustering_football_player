@@ -175,7 +175,7 @@ def main():
             defensive_features = ['Tacles', 'Interceptions']
 
         elif '4' in position_choice: # '4. Défenseur': ['CB']
-            offensive_features = ['Passes progressives', 'Possessions progressives']
+            offensive_features = ['Passes progressives']
             defensive_features = ['Tacles', 'Interceptions', 'Balles contrées', 'Dégagements', 'Duel aérien gagnés']
 
         elif '5' in position_choice: #  '5. Latéral': ['RB', 'LB']
