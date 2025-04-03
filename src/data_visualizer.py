@@ -279,6 +279,12 @@ class DataVisualizer:
         # Ajouter les labels des axes en blanc et en gras avec détails supplémentaires
         ax1.set_xlabel('Contribution Offensive (PCA Composante 1)', fontsize=16, color='white', fontweight='bold')
         ax1.set_ylabel('Contribution Défensive (PCA Composante 2)', fontsize=16, color='white', fontweight='bold')
+        
+        offensive_text = "Contribution Offensive = " + ", ".join(offensive_features)
+        defensive_text = "Contribution Défensive = " + ", ".join(defensive_features)
+
+        ax1.text(0.25, -0.125, offensive_text, fontsize=10, color='white', fontweight='light', ha='left', va='top', transform=ax1.transAxes)
+        ax1.text(0.25, -0.1, defensive_text, fontsize=10, color='white', fontweight='light', ha='left', va='top', transform=ax1.transAxes)
 
         # Appliquer la personnalisation des axes (contours blancs et épais)
         self.customize_axes(ax1)
@@ -399,8 +405,16 @@ class DataVisualizer:
         # Calculer les distances du joueur de référence avec les autres
         other_players = player_names[1:]  # Exclure le joueur de référence
         other_players_pca = position_players[position_players['player_name'].isin(other_players)][['PCA_Component_1', 'PCA_Component_2']].values
+        
+        other_players_pca = np.array([
+            position_players[position_players['player_name'] == player][['PCA_Component_1', 'PCA_Component_2']].values[0]
+            for player in other_players if player in position_players['player_name'].values
+        ])
 
         distances = cdist(reference_player_pca, other_players_pca, metric='euclidean').flatten()
+        
+        if len(other_players) != len(distances):
+            other_players = other_players[:len(distances)]
 
         # Créer une figure avec une répartition 60%-40% pour les colonnes
         fig = plt.figure(figsize=(16, 9))
@@ -447,8 +461,14 @@ class DataVisualizer:
         ax1.set_title(f'Clustering des joueurs pour la position : {positions_str}', fontsize=25, color='white', fontweight='bold')
     
         # Ajouter les labels des axes en blanc et en gras avec détails supplémentaires
-        ax1.set_xlabel('Contribution Offensive (PCA Composante 1)', fontsize=16, color='white', fontweight='bold')
+        ax1.set_xlabel('Contribution Offensive (PCA Composante 1) ', fontsize=16, color='white', fontweight='bold')
         ax1.set_ylabel('Contribution Défensive (PCA Composante 2)', fontsize=16, color='white', fontweight='bold')
+        
+        offensive_text = "Contribution Offensive = " + ", ".join(offensive_features)
+        defensive_text = "Contribution Défensive = " + ", ".join(defensive_features)
+
+        ax1.text(0.25, -0.125, offensive_text, fontsize=10, color='white', fontweight='light', ha='left', va='top', transform=ax1.transAxes)
+        ax1.text(0.25, -0.1, defensive_text, fontsize=10, color='white', fontweight='light', ha='left', va='top', transform=ax1.transAxes)
     
         # Appliquer la personnalisation des axes (contours blancs et épais)
         self.customize_axes(ax1)
@@ -477,6 +497,9 @@ class DataVisualizer:
         ax2.axis('off')
 
         # Créer un tableau avec deux colonnes : Joueur, Distance avec {Joueur de référence}
+        print(f"Taille de other_players ", other_players)
+        print(f"Taille de distances: ", distances)
+
         closest_players = pd.DataFrame({
             'Nom': other_players,
             f'Distance - {reference_player}': distances.round(2)
@@ -585,6 +608,12 @@ class DataVisualizer:
         # Ajouter les labels des axes en blanc et en gras
         ax.set_xlabel('Contribution Offensive (PCA Composante 1)', fontsize=16, color='white', fontweight='bold')
         ax.set_ylabel('Contribution Défensive (PCA Composante 2)', fontsize=16, color='white', fontweight='bold')
+        
+        offensive_text = "Contribution Offensive = " + ", ".join(offensive_features)
+        defensive_text = "Contribution Défensive = " + ", ".join(defensive_features)
+
+        ax.text(0.25, -0.125, offensive_text, fontsize=10, color='white', fontweight='light', ha='left', va='top', transform=ax.transAxes)
+        ax.text(0.25, -0.1, defensive_text, fontsize=10, color='white', fontweight='light', ha='left', va='top', transform=ax.transAxes)
     
         # Ajouter l'étiquette Twitter
         ax.text(0.5, 0.75, f"@TarbouchData", fontsize=14, color='white', fontweight='bold', ha='left', transform=ax.transAxes, alpha=0.8)
